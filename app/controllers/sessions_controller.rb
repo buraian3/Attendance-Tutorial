@@ -8,20 +8,15 @@ class SessionsController < ApplicationController
     if user && user.authenticate(params[:session][:password])
       log_in user
       params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-      redirect_to user
+      redirect_back_or user
     else
       flash.now[:danger] = '認証に失敗しました。'
       render :new
     end
   end
-  
-  def current_user
-    if session[:user_id]
-    @current_user = @current_user || User.find_by(id: session[:user_id])
-    end
-  end
-  
+
   def destroy
+     # ログイン中の場合のみログアウト処理を実行します。
     log_out if logged_in?
     flash[:success] = 'ログアウトしました。'
     redirect_to root_url
